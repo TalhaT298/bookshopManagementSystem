@@ -21,31 +21,72 @@ This project is a Laravel-based application for managing a bookstore. It include
 
 ## Installation
 
-### Step 1: Clone and Set Up the Project
+###  Clone and Set Up the Project
 
 ```bash
 composer create-project laravel/laravel laravel-bookstore
 cd laravel-bookstore
 ```
-### Step 2: Install Dependencies
+### (A)Install Dependencies
 ```bash
 composer install
 ```
-### Step 3: Generate Application Key
+### Generate Application Key
 ```bash
 php artisan key:generate
 ```
-### Step 4: Run Database Migrations
+### Run Database Migrations
 ```bash
 php artisan migrate
 ```
-### Step 5: Seed the Database
+### Seed the Database
 ```bash
 php artisan db:seed DatabaseSeeder
 ```
-### Step 6: Start the Development Server
+### (B) Step1: Start the Development Server
 ```bash
 php artisan serve
+```
+## Set Up the Database
+
+1. **Create a New Database**  
+   Create a new database (e.g., `laravel_bookstore`) in your database server.
+
+2. **Update the `.env` File**  
+   Configure your database credentials in the `.env` file as follows:
+
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=laravel_bookstore
+   DB_USERNAME=your_username
+   DB_PASSWORD=your_password
+   ```
+### Step 2: Run Migrations
+
+Run the following command to create the necessary tables in the database:
+
+```bash
+php artisan migrate
+```
+### Step 3: Seed the Database
+
+Seed the database with dummy data by running the following command:
+
+```bash
+php artisan db:seed DatabaseSeeder
+```
+### Step 4: Start the Development Server
+
+Start the Laravel development server using the following command:
+
+```bash
+php artisan serve
+```
+Your application will be available at:
+```bash
+http://127.0.0.1:8000
 ```
 ## Models
 
@@ -232,4 +273,11 @@ class DatabaseSeeder extends Seeder
         Book::factory()->count(200)->create();
     }
 }
+```
+## Run the Seeder
+
+To seed the database with the initial data for books and users, use the following command:
+
+```bash
+php artisan db:seed --class=DatabaseSeeder
 ```
