@@ -74,3 +74,162 @@ class Book extends Model
     ];
 }
 ```
+## Controllers
+
+### BookController
+
+Handles CRUD operations for books.
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Book;
+
+class BookController extends Controller
+{
+    public function index()
+    {
+        $books = Book::paginate(10);
+        return view('books.index')->with('books', $books);
+    }
+
+    public function show($id) 
+    {
+        $book = Book::find($id);
+        return view('books.show')->with('book', $book);
+    }
+
+    public function create()
+    {
+        return view('books.create');
+    }
+
+    public function store(Request $request)
+    {
+        $rules = [
+            "title" => "required",
+            "author" => "required",
+            "isbn" => "required|size:13",
+            "stock" => "required|numeric|integer|gte:0",
+            "price" => "required|numeric"
+        ];
+
+        $messages = [
+            'stock.gte' => 'The stock must be greater than or equal to 0',
+        ];
+
+        $request->validate($rules, $messages);
+
+        $book = Book::create($request->all());
+
+        return redirect()->route("books.show", $book->id);
+    }
+
+    public function destroy(Request $request, $id)  
+    {
+        $book = Book::find($id);
+        $book->delete();
+
+        return redirect()->route("books.index");
+    }
+
+    public function search(Request $request)
+    {
+        $text = '%' . $request->search . '%';
+        $books = Book::where('title', 'LIKE', $text)->paginate(10);
+        return view('books.index')->with('books', $books);
+    }
+}
+```
+## Database
+
+### Migration: Create `books` Table
+
+Defines the schema for the `books` table.
+
+```php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('books', function (Blueprint $table) {
+            $table->id();
+            $table->string('title', 255);
+            $table->string('author', 255);
+            $table->string('isbn', 13);
+            $table->smallInteger('stock')->default(0);
+            $table->float('price', 8)->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('books');
+    }
+};
+```
+## Factory
+
+### BookFactory
+
+Generates fake data for books to seed the database.
+
+```php
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class BookFactory extends Factory
+{
+    public function definition(): array
+    {
+        return [
+            'title' => fake()->sentence,
+            'author' => fake()->name,
+            'isbn' => fake()->isbn13(),
+            'stock' => fake()->numberBetween(1, 10),
+            'price' => fake()->randomFloat(2, 10, 100),
+        ];
+    }
+}
+```
+## Seeder
+
+### DatabaseSeeder
+
+Seeds the database with initial data for books and users.
+
+```php
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Book;
+use App\Models\User;
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    public function run(): void
+    {
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
+
+        Book::factory()->count(200)->create();
+    }
+}
+```
