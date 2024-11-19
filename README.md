@@ -47,3 +47,30 @@ php artisan db:seed DatabaseSeeder
 ```bash
 php artisan serve
 ```
+## Models
+
+### Book Model
+
+The `Book` model represents the structure of a book record. It includes attributes such as title, author, ISBN, price, and stock.
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Book extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        "title",
+        "author",
+        "isbn",
+        "price",
+        "stock",
+    ];
+}
+```
